@@ -7,18 +7,19 @@ This project allows you to summarize PDF documents into concise English summarie
 
 ## Features
 
-- Summarize **PDFs** using `facebook/bart-large-cnn` or custom transformer models.
-- Web interface via **Streamlit** (`app.py`).
-- Telegram bot for **text, voice, and PDF summarization**.
-- Dockerized for easy deployment.
-- Configurable model parameters: chunk size, summary length, sampling, and temperature.
-- Efficient chunking for long PDFs with overlapping token windows.
+- **Summarize **PDFs** using `facebook/bart-large-cnn` or custom transformer models.
+- **Web interface via **Streamlit** (`app.py`).
+- **Telegram bot for **text, voice, and PDF summarization**.
+- **Dockerized for easy deployment.
+- **Configurable model parameters: chunk size, summary length, sampling, and temperature.
+- **Efficient chunking for long PDFs with overlapping token windows.
 
 ---
 
 ## Project Structure
 
-.
+```
+Summerizer/
 ├── app.py # Streamlit web app
 ├── telegram_bot.py # Telegram bot handler
 ├── summarizer.py # PDF summarization logic
@@ -26,7 +27,7 @@ This project allows you to summarize PDF documents into concise English summarie
 ├── docker-compose.yml # Docker Compose configuration
 ├── requirements.txt # Python dependencies
 └── README.md # Project documentation
-
+```
 ---
 
 ## Installation (Local)
