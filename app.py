@@ -1,22 +1,33 @@
 import io
 import time
+import tempfile
 import streamlit as st
 
 from summarizer import PdfSummarizer, SummarizationConfig, create_default_summarizer
 
+# --- Page configuration ---
+st.set_page_config(page_title="PDF/Text/Voice Summarizer", page_icon="📝", layout="centered")
 
-st.set_page_config(page_title="PDF Summarizer", page_icon="📝", layout="centered")
+# --- Groq transcription placeholder (replace with real API call if needed) ---
+def transcribe_with_groq(audio_path: str) -> str:
+    """
+    Transcribe voice file to text.
+    Replace this with your Groq API or Whisper logic.
+    """
+    # For now, return dummy text if needed
+    return "Transcribed text from audio"
 
-
+# --- Cache summarizer ---
 @st.cache_resource(show_spinner=False)
 def get_summarizer(config: SummarizationConfig) -> PdfSummarizer:
     return PdfSummarizer(config)
 
-
+# --- Main app ---
 def main() -> None:
-    st.title("📝 PDF to English Summary")
-    st.write("Upload a PDF to generate a concise English summary.")
+    st.title("📝 Multi-Input Summarizer")
+    st.write("Upload a PDF, type/paste text, or upload a voice message to get a summary.")
 
+    # --- Sidebar settings ---
     with st.sidebar:
         st.header("Settings")
         model_name = st.text_input("Model", value="facebook/bart-large-cnn")
@@ -27,41 +38,63 @@ def main() -> None:
         do_sample = st.checkbox("Use sampling", value=False)
         temperature = st.slider("Temperature", min_value=0.1, max_value=2.0, value=1.0, step=0.1)
 
-    uploaded = st.file_uploader("Choose a PDF file", type=["pdf"])
+    config = SummarizationConfig(
+        model_name=model_name,
+        device=None,  # set 0 if using GPU
+        max_chunk_tokens=max_chunk_tokens,
+        chunk_overlap_tokens=chunk_overlap_tokens,
+        min_summary_tokens=min_summary_tokens,
+        max_summary_tokens=max_summary_tokens,
+        do_sample=do_sample,
+        temperature=temperature,
+    )
 
-    if uploaded is not None:
-        pdf_bytes: bytes = uploaded.read()
+    summarizer = get_summarizer(config)
 
-        config = SummarizationConfig(
-            model_name=model_name,
-            device=None,  # set to 0 manually if running on GPU
-            max_chunk_tokens=max_chunk_tokens,
-            chunk_overlap_tokens=chunk_overlap_tokens,
-            min_summary_tokens=min_summary_tokens,
-            max_summary_tokens=max_summary_tokens,
-            do_sample=do_sample,
-            temperature=temperature,
-        )
+    # --- Text input ---
+    text_input = st.text_area("Enter text to summarize:")
 
-        summarizer = get_summarizer(config)
+    if text_input.strip():
+        with st.spinner("Generating summary for text..."):
+            start = time.time()
+            summary = summarizer.summarize_text(text_input)
+            elapsed = time.time() - start
+        st.subheader("Summary (Text)")
+        st.write(summary or "(Empty summary)")
+        st.success(f"Done in {elapsed:.1f}s")
 
-        with st.spinner("Extracting text and generating summary..."):
+    # --- PDF input ---
+    pdf_file = st.file_uploader("Upload a PDF", type=["pdf"])
+    if pdf_file:
+        pdf_bytes = pdf_file.read()
+        with st.spinner("Extracting text and generating summary for PDF..."):
             start = time.time()
             full_text, summary = summarizer.summarize_pdf_bytes(pdf_bytes)
             elapsed = time.time() - start
-
-        st.success(f"Done in {elapsed:.1f}s")
-        st.subheader("Summary")
+        st.subheader("Summary (PDF)")
         st.write(summary or "(Empty summary)")
-
+        st.success(f"Done in {elapsed:.1f}s")
         with st.expander("Show extracted text"):
             st.text_area("Extracted Text", value=full_text, height=300)
 
-    else:
-        st.info("Upload a PDF to begin.")
+    # --- Voice input ---
+    voice_file = st.file_uploader("Upload a voice file", type=["mp3", "wav", "ogg"])
+    if voice_file:
+        with tempfile.NamedTemporaryFile(suffix=".wav", delete=False) as tmp:
+            tmp.write(voice_file.read())
+            tmp_path = tmp.name
 
+        with st.spinner("Transcribing voice and generating summary..."):
+            start = time.time()
+            text = transcribe_with_groq(tmp_path)
+            if text:
+                summary = summarizer.summarize_text(text)
+                st.subheader("Summary (Voice)")
+                st.write(summary or "(Empty summary)")
+            else:
+                st.warning("Could not transcribe voice.")
+            elapsed = time.time() - start
+            st.success(f"Done in {elapsed:.1f}s")
 
 if __name__ == "__main__":
     main()
-
-
