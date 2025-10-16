@@ -10,8 +10,8 @@ from transformers import AutoModelForSeq2SeqLM, AutoTokenizer, pipeline
 
 @dataclass
 class SummarizationConfig:
-    model_name: str = "facebook/bart-large-cnn"
-    device: Optional[int] = None  # CPU by default; set 0 for CUDA if available
+    model_name: str = "csebuetnlp/mT5_multilingual_XLSum"  # Supports Persian & 45+ languages
+    device: Optional[int] = None  # Set 0 for GPU
     max_chunk_tokens: int = 900
     chunk_overlap_tokens: int = 100
     min_summary_tokens: int = 64
@@ -24,6 +24,7 @@ class PdfSummarizer:
     def __init__(self, config: Optional[SummarizationConfig] = None) -> None:
         self.config = config or SummarizationConfig()
 
+        print(f"Loading model: {self.config.model_name}")
         self.tokenizer = AutoTokenizer.from_pretrained(self.config.model_name)
         self.model = AutoModelForSeq2SeqLM.from_pretrained(self.config.model_name)
 
@@ -70,8 +71,19 @@ class PdfSummarizer:
 
     # --- Summarization ---
     def _summarize_chunk(self, chunk: str) -> str:
+        if not chunk.strip():
+            return ""
+
+        # Add language-aware prefix for better summaries
+        if self._is_persian(chunk):
+            prefix = "خلاصه: "
+        else:
+            prefix = "summarize: "
+
+        input_text = prefix + chunk.strip()
+
         summary_list = self.pipe(
-            chunk,
+            input_text,
             do_sample=self.config.do_sample,
             temperature=self.config.temperature,
             min_length=self.config.min_summary_tokens,
@@ -80,6 +92,11 @@ class PdfSummarizer:
         )
         return summary_list[0]["summary_text"].strip()
 
+    # --- Language detection (simple Persian detection) ---
+    def _is_persian(self, text: str) -> bool:
+        return any("\u0600" <= ch <= "\u06FF" for ch in text)
+
+    # --- Public methods ---
     def summarize_text(self, text: str) -> str:
         chunks = self._chunk_text(text)
         if not chunks:
@@ -113,5 +130,5 @@ def summarize_pdf(file_path: str) -> str:
     return summary
 
 
-# Global summarizer instance for re-use
+# Global summarizer instance for reuse
 summarizer = create_default_summarizer()
