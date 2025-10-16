@@ -138,7 +138,7 @@ You can configure the summarizer via SummarizationConfig:
 
 | Parameter              | Description                                | Default                   |
 | ---------------------- | ------------------------------------------ | ------------------------- |
-| `model_name`           | Hugging Face model for summarization       | `facebook/bart-large-cnn` |
+| `model_name`           | Hugging Face model for summarization       | `csebuetnlp/mT5_multilingual_XLSum` |
 | `device`               | CPU by default, set GPU index if available | `None`                    |
 | `max_chunk_tokens`     | Maximum tokens per chunk                   | `900`                     |
 | `chunk_overlap_tokens` | Overlap between chunks                     | `100`                     |
