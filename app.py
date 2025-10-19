@@ -3,7 +3,7 @@ import time
 import tempfile
 import streamlit as st
 
-from summarizer import PdfSummarizer, SummarizationConfig, create_default_summarizer
+from summarizer import PdfSummarizer
 
 # --- Page configuration ---
 st.set_page_config(page_title="PDF/Text/Voice Summarizer", page_icon="📝", layout="centered")
@@ -17,9 +17,11 @@ def transcribe_with_groq(audio_path: str) -> str:
     # For now, return dummy text if needed
     return "Transcribed text from audio"
 
-# --- Cache summarizer ---
+# --- Cache summarizer (lazy import inside) ---
 @st.cache_resource(show_spinner=False)
-def get_summarizer(config: SummarizationConfig) -> PdfSummarizer:
+def get_summarizer(config_hash: str) -> 'PdfSummarizer':
+    from summarizer import SummarizationConfig, PdfSummarizer  # Lazy import inside function
+    config = SummarizationConfig()  # Use default BART config; override if needed via hash
     return PdfSummarizer(config)
 
 # --- Main app ---
@@ -27,29 +29,20 @@ def main() -> None:
     st.title("📝 Multi-Input Summarizer")
     st.write("Upload a PDF, type/paste text, or upload a voice message to get a summary.")
 
-    # --- Sidebar settings ---
+    # --- Sidebar settings (default to BART) ---
     with st.sidebar:
         st.header("Settings")
-        model_name = st.text_input("Model", value="csebuetnlp/mT5_multilingual_XLSum")  # Default to multilingual for Persian
-        max_chunk_tokens = st.slider("Max chunk tokens", min_value=256, max_value=1500, value=512, step=32)
-        chunk_overlap_tokens = st.slider("Chunk overlap tokens", min_value=0, max_value=400, value=50, step=10)
-        min_summary_tokens = st.slider("Min summary tokens", min_value=16, max_value=256, value=50, step=8)
-        max_summary_tokens = st.slider("Max summary tokens", min_value=64, max_value=512, value=150, step=8)
-        do_sample = st.checkbox("Use sampling", value=True)  # Enable for natural summaries
-        temperature = st.slider("Temperature", min_value=0.1, max_value=2.0, value=0.5, step=0.1)
+        model_name = st.text_input("Model", value="facebook/bart-large-cnn")
+        max_chunk_tokens = st.slider("Max chunk tokens", min_value=256, max_value=1500, value=900, step=32)
+        chunk_overlap_tokens = st.slider("Chunk overlap tokens", min_value=0, max_value=400, value=100, step=10)
+        min_summary_tokens = st.slider("Min summary tokens", min_value=16, max_value=256, value=64, step=8)
+        max_summary_tokens = st.slider("Max summary tokens", min_value=64, max_value=512, value=256, step=8)
+        do_sample = st.checkbox("Use sampling", value=False)
+        temperature = st.slider("Temperature", min_value=0.1, max_value=2.0, value=1.0, step=0.1)
 
-    config = SummarizationConfig(
-        model_name=model_name,
-        device=None,  # set 0 if using GPU
-        max_chunk_tokens=max_chunk_tokens,
-        chunk_overlap_tokens=chunk_overlap_tokens,
-        min_summary_tokens=min_summary_tokens,
-        max_summary_tokens=max_summary_tokens,
-        do_sample=do_sample,
-        temperature=temperature,
-    )
-
-    summarizer = get_summarizer(config)
+    # Hash for caching (reloads summarizer if settings change)
+    config_hash = f"{model_name}_{max_chunk_tokens}_{chunk_overlap_tokens}_{min_summary_tokens}_{max_summary_tokens}_{do_sample}_{temperature}"
+    summarizer = get_summarizer(config_hash)
 
     # --- Text input ---
     text_input = st.text_area("Enter text to summarize:")

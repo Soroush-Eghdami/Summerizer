@@ -1,7 +1,7 @@
 import os
 import tempfile
 from typing import Optional
-from dotenv import load_dotenv
+from venv import load_dotenv
 import os
 
 import requests
