@@ -30,13 +30,13 @@ def main() -> None:
     # --- Sidebar settings ---
     with st.sidebar:
         st.header("Settings")
-        model_name = st.text_input("Model", value="facebook/bart-large-cnn")
-        max_chunk_tokens = st.slider("Max chunk tokens", min_value=256, max_value=1500, value=900, step=32)
-        chunk_overlap_tokens = st.slider("Chunk overlap tokens", min_value=0, max_value=400, value=100, step=10)
-        min_summary_tokens = st.slider("Min summary tokens", min_value=16, max_value=256, value=64, step=8)
-        max_summary_tokens = st.slider("Max summary tokens", min_value=64, max_value=512, value=256, step=8)
-        do_sample = st.checkbox("Use sampling", value=False)
-        temperature = st.slider("Temperature", min_value=0.1, max_value=2.0, value=1.0, step=0.1)
+        model_name = st.text_input("Model", value="csebuetnlp/mT5_multilingual_XLSum")  # Default to multilingual for Persian
+        max_chunk_tokens = st.slider("Max chunk tokens", min_value=256, max_value=1500, value=512, step=32)
+        chunk_overlap_tokens = st.slider("Chunk overlap tokens", min_value=0, max_value=400, value=50, step=10)
+        min_summary_tokens = st.slider("Min summary tokens", min_value=16, max_value=256, value=50, step=8)
+        max_summary_tokens = st.slider("Max summary tokens", min_value=64, max_value=512, value=150, step=8)
+        do_sample = st.checkbox("Use sampling", value=True)  # Enable for natural summaries
+        temperature = st.slider("Temperature", min_value=0.1, max_value=2.0, value=0.5, step=0.1)
 
     config = SummarizationConfig(
         model_name=model_name,
