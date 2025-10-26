@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Summarizer - Text, PDF & Audio</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+        .float-animation {
+            animation: float 3s ease-in-out infinite;
+        }
+        .gradient-text {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-gray-50 to-gray-100 dark:bg-gray-900 min-h-screen">
+    
+    <!-- Header -->
+    <header class="bg-white dark:bg-gray-800 shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+            <div class="flex justify-between items-center mb-4">
+                <button onclick="toggleDarkMode()" class="p-2 rounded-lg bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors">
+                    <i id="dark-mode-icon" class="fas fa-moon text-gray-700 dark:text-yellow-400"></i>
+                </button>
+                <div class="text-center flex-1">
+                    <h1 class="text-5xl font-bold gradient-text mb-2">
+                        🤖 AI Summarizer
+                    </h1>
+                    <p class="text-gray-600 dark:text-gray-300 text-lg">
+                        Transform your text, PDFs, and audio into concise summaries using advanced AI
+                    </p>
+                </div>
+                <div class="w-10"></div> <!-- Spacer for alignment -->
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        
+        <!-- Feature Cards -->
+        <div class="grid md:grid-cols-3 gap-6 mb-8">
+            <div class="bg-white dark:bg-gray-800 rounded-2xl p-8 shadow-lg hover:shadow-xl transition-shadow float-animation" style="animation-delay: 0s;">
+                <div class="text-6xl text-center mb-4">📝</div>
+                <h3 class="text-xl font-bold text-center mb-2 dark:text-white">Text</h3>
+                <p class="text-gray-600 dark:text-gray-300 text-center">Summarize any text instantly</p>
+            </div>
+            <div class="bg-white dark:bg-gray-800 rounded-2xl p-8 shadow-lg hover:shadow-xl transition-shadow float-animation" style="animation-delay: 0.3s;">
+                <div class="text-6xl text-center mb-4">📄</div>
+                <h3 class="text-xl font-bold text-center mb-2 dark:text-white">PDF</h3>
+                <p class="text-gray-600 dark:text-gray-300 text-center">Extract and summarize documents</p>
+            </div>
+            <div class="bg-white dark:bg-gray-800 rounded-2xl p-8 shadow-lg hover:shadow-xl transition-shadow float-animation" style="animation-delay: 0.6s;">
+                <div class="text-6xl text-center mb-4">🎤</div>
+                <h3 class="text-xl font-bold text-center mb-2 dark:text-white">Audio</h3>
+                <p class="text-gray-600 dark:text-gray-300 text-center">Transcribe and summarize voice</p>
+            </div>
+        </div>
+
+        <!-- Tabs -->
+        <div class="bg-white rounded-2xl shadow-lg overflow-hidden">
+            <!-- Tab Navigation -->
+            <div class="flex border-b border-gray-200">
+                <button onclick="switchTab('text')" class="tab-btn flex-1 px-6 py-4 font-semibold text-gray-700 hover:bg-gray-50 transition-colors border-b-2 border-transparent" id="tab-text">
+                    📝 Text
+                </button>
+                <button onclick="switchTab('pdf')" class="tab-btn flex-1 px-6 py-4 font-semibold text-gray-700 hover:bg-gray-50 transition-colors border-b-2 border-transparent" id="tab-pdf">
+                    📄 PDF
+                </button>
+                <button onclick="switchTab('audio')" class="tab-btn flex-1 px-6 py-4 font-semibold text-gray-700 hover:bg-gray-50 transition-colors border-b-2 border-transparent" id="tab-audio">
+                    🎤 Audio
+                </button>
+            </div>
+
+            <!-- Tab Content -->
+            <div class="p-8">
+                
+                <!-- Text Tab -->
+                <div id="content-text" class="tab-content">
+                    <h2 class="text-2xl font-bold mb-4">Enter Your Text</h2>
+                    <textarea id="text-input" rows="10" class="w-full border-2 border-gray-300 rounded-lg p-4 focus:border-purple-500 focus:outline-none transition-colors" placeholder="Paste or type the text you want to summarize here..."></textarea>
+                    <button onclick="summarizeText()" class="mt-4 w-full bg-gradient-to-r from-purple-600 to-purple-800 text-white py-3 px-6 rounded-lg font-semibold hover:shadow-lg transition-all hover:scale-105">
+                        <i class="fas fa-magic mr-2"></i> Summarize Text
+                    </button>
+                </div>
+
+                <!-- PDF Tab -->
+                <div id="content-pdf" class="tab-content hidden">
+                    <h2 class="text-2xl font-bold mb-4">Upload PDF File</h2>
+                    <div class="border-2 border-dashed border-purple-400 rounded-lg p-8 text-center bg-purple-50">
+                        <input type="file" id="pdf-input" accept=".pdf" class="hidden" onchange="handlePdfSelect(event)">
+                        <label for="pdf-input" class="cursor-pointer">
+                            <i class="fas fa-cloud-upload-alt text-6xl text-purple-600 mb-4"></i>
+                            <p class="text-gray-700 font-semibold">Click to upload PDF</p>
+                            <p class="text-gray-500 text-sm mt-2">Maximum file size: 200MB</p>
+                        </label>
+                    </div>
+                    <button onclick="summarizePdf()" class="mt-4 w-full bg-gradient-to-r from-purple-600 to-purple-800 text-white py-3 px-6 rounded-lg font-semibold hover:shadow-lg transition-all hover:scale-105">
+                        <i class="fas fa-file-pdf mr-2"></i> Summarize PDF
+                    </button>
+                </div>
+
+                <!-- Audio Tab -->
+                <div id="content-audio" class="tab-content hidden">
+                    <h2 class="text-2xl font-bold mb-4">Upload Audio File</h2>
+                    <div class="border-2 border-dashed border-purple-400 rounded-lg p-8 text-center bg-purple-50">
+                        <input type="file" id="audio-input" accept=".mp3,.wav,.ogg" class="hidden" onchange="handleAudioSelect(event)">
+                        <label for="audio-input" class="cursor-pointer">
+                            <i class="fas fa-microphone text-6xl text-purple-600 mb-4"></i>
+                            <p class="text-gray-700 font-semibold">Click to upload audio</p>
+                            <p class="text-gray-500 text-sm mt-2">MP3, WAV, or OGG format</p>
+                        </label>
+                    </div>
+                    <button onclick="summarizeAudio()" class="mt-4 w-full bg-gradient-to-r from-purple-600 to-purple-800 text-white py-3 px-6 rounded-lg font-semibold hover:shadow-lg transition-all hover:scale-105">
+                        <i class="fas fa-waveform-lines mr-2"></i> Transcribe & Summarize
+                    </button>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Results -->
+        <div id="results" class="mt-8 hidden">
+            <div class="bg-gradient-to-br from-purple-50 to-pink-50 rounded-2xl shadow-lg p-8">
+                <h2 class="text-2xl font-bold mb-4 flex items-center">
+                    <i class="fas fa-sparkles text-purple-600 mr-2"></i> Summary
+                </h2>
+                <div id="summary-content" class="bg-white rounded-lg p-6 mb-4"></div>
+                <button onclick="copySummary()" class="bg-purple-600 text-white px-6 py-2 rounded-lg hover:bg-purple-700 transition-colors">
+                    <i class="fas fa-copy mr-2"></i> Copy Summary
+                </button>
+            </div>
+        </div>
+
+        <!-- Loading Overlay -->
+        <div id="loading" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <div class="bg-white rounded-2xl p-8 max-w-md mx-4 text-center">
+                <div class="animate-spin rounded-full h-16 w-16 border-b-4 border-purple-600 mx-auto mb-4"></div>
+                <p class="text-lg font-semibold text-gray-700">Processing...</p>
+                <p class="text-sm text-gray-500 mt-2">This may take a few moments</p>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-white mt-16 py-8 text-center text-gray-600">
+        <p>Built with ❤️ using Flask, Transformers & Groq API</p>
+        <p class="text-sm mt-2">Powered by AI • Fast • Reliable</p>
+    </footer>
+
+    <script>
+        let selectedPdfFile = null;
+        let selectedAudioFile = null;
+
+        function switchTab(tab) {
+            // Hide all content
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.add('hidden'));
+            
+            // Remove active class from all tabs
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('border-purple-600', 'text-purple-600');
+                btn.classList.add('border-transparent');
+            });
+
+            // Show selected content
+            document.getElementById('content-' + tab).classList.remove('hidden');
+            
+            // Add active class to selected tab
+            const activeTab = document.getElementById('tab-' + tab);
+            activeTab.classList.add('border-purple-600', 'text-purple-600');
+            activeTab.classList.remove('border-transparent');
+        }
+
+        function showLoading() {
+            document.getElementById('loading').classList.remove('hidden');
+        }
+
+        function hideLoading() {
+            document.getElementById('loading').classList.add('hidden');
+        }
+
+        function showResults(summary, additionalData = {}) {
+            document.getElementById('summary-content').innerHTML = summary.replace(/\n/g, '<br>');
+            if (additionalData.transcribed_text) {
+                document.getElementById('summary-content').innerHTML += `<hr class="my-4"><h3 class="font-bold mb-2">Transcribed Text:</h3><p class="text-gray-600">${additionalData.transcribed_text}</p>`;
+            }
+            if (additionalData.extracted_text) {
+                document.getElementById('summary-content').innerHTML += `<hr class="my-4"><button onclick="toggleExtractedText()" class="text-purple-600 font-semibold mb-2">Show Extracted Text</button><div id="extracted-text" class="hidden">${additionalData.extracted_text.replace(/\n/g, '<br>')}</div>`;
+            }
+            document.getElementById('results').classList.remove('hidden');
+            document.getElementById('results').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function showError(message) {
+            document.getElementById('summary-content').innerHTML = `<div class="text-red-600"><i class="fas fa-exclamation-circle mr-2"></i>${message}</div>`;
+            document.getElementById('results').classList.remove('hidden');
+        }
+
+        async function summarizeText() {
+            const text = document.getElementById('text-input').value.trim();
+            if (!text) {
+                showError('Please enter some text to summarize');
+                return;
+            }
+
+            showLoading();
+            try {
+                const response = await fetch('/api/summarize/text', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ text })
+                });
+                const data = await response.json();
+                if (response.ok) {
+                    showResults(data.summary);
+                } else {
+                    showError(data.error || 'Failed to summarize text');
+                }
+            } catch (error) {
+                showError('An error occurred: ' + error.message);
+            } finally {
+                hideLoading();
+            }
+        }
+
+        function handlePdfSelect(event) {
+            selectedPdfFile = event.target.files[0];
+        }
+
+        async function summarizePdf() {
+            if (!selectedPdfFile) {
+                showError('Please select a PDF file');
+                return;
+            }
+
+            showLoading();
+            try {
+                const formData = new FormData();
+                formData.append('file', selectedPdfFile);
+                
+                const response = await fetch('/api/summarize/pdf', {
+                    method: 'POST',
+                    body: formData
+                });
+                const data = await response.json();
+                if (response.ok) {
+                    showResults(data.summary, { extracted_text: data.extracted_text });
+                } else {
+                    showError(data.error || 'Failed to summarize PDF');
+                }
+            } catch (error) {
+                showError('An error occurred: ' + error.message);
+            } finally {
+                hideLoading();
+            }
+        }
+
+        function handleAudioSelect(event) {
+            selectedAudioFile = event.target.files[0];
+        }
+
+        async function summarizeAudio() {
+            if (!selectedAudioFile) {
+                showError('Please select an audio file');
+                return;
+            }
+
+            showLoading();
+            try {
+                const formData = new FormData();
+                formData.append('file', selectedAudioFile);
+                
+                const response = await fetch('/api/summarize/audio', {
+                    method: 'POST',
+                    body: formData
+                });
+                const data = await response.json();
+                if (response.ok) {
+                    showResults(data.summary, { transcribed_text: data.transcribed_text });
+                } else {
+                    showError(data.error || 'Failed to transcribe and summarize audio');
+                }
+            } catch (error) {
+                showError('An error occurred: ' + error.message);
+            } finally {
+                hideLoading();
+            }
+        }
+
+        function copySummary() {
+            const summaryText = document.getElementById('summary-content').textContent;
+            navigator.clipboard.writeText(summaryText).then(() => {
+                alert('Summary copied to clipboard!');
+            });
+        }
+
+        function toggleExtractedText() {
+            const extractedText = document.getElementById('extracted-text');
+            extractedText.classList.toggle('hidden');
+        }
+
+        // Dark mode toggle
+        function toggleDarkMode() {
+            const html = document.documentElement;
+            const icon = document.getElementById('dark-mode-icon');
+            
+            if (html.classList.contains('dark')) {
+                html.classList.remove('dark');
+                icon.classList.remove('fa-moon');
+                icon.classList.add('fa-sun');
+                localStorage.setItem('darkMode', 'false');
+            } else {
+                html.classList.add('dark');
+                icon.classList.remove('fa-sun');
+                icon.classList.add('fa-moon');
+                localStorage.setItem('darkMode', 'true');
+            }
+        }
+
+        // Load saved dark mode preference
+        function loadDarkModePreference() {
+            const saved = localStorage.getItem('darkMode');
+            const html = document.documentElement;
+            const icon = document.getElementById('dark-mode-icon');
+            
+            if (saved === 'true') {
+                html.classList.add('dark');
+                icon.classList.remove('fa-sun');
+                icon.classList.add('fa-moon');
+            } else {
+                html.classList.remove('dark');
+                icon.classList.remove('fa-moon');
+                icon.classList.add('fa-sun');
+            }
+        }
+
+        // Initialize dark mode on page load
+        loadDarkModePreference();
+
+        // Set default tab
+        switchTab('text');
+    </script>
+</body>
+</html>
