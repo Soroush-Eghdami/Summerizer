@@ -154,6 +154,33 @@ This will start:
 
 ---
 
+## 📝 About the Procfile
+
+The `Procfile` tells hosting platforms (like Heroku, Render, Railway) how to run your application.
+
+**Procfile content:**
+```
+web: python server.py
+```
+
+### What does it mean?
+- `web:` - Tells the platform this is the main web process
+- `python server.py` - The command to start your Flask app
+
+### How it works:
+1. Platform reads the `Procfile`
+2. Runs the `web:` command
+3. Flask app starts on the port provided by the platform (via `$PORT` environment variable)
+4. Your app is live! 🎉
+
+### Platforms that use Procfile:
+- ✅ **Heroku** - Detects and uses Procfile automatically
+- ✅ **Render** - Can use Procfile or custom start command
+- ✅ **Railway** - Uses Procfile automatically
+- ✅ **Fly.io** - Supports Procfile
+
+---
+
 ## 📦 Deployment to GitHub
 
 ### Already on GitHub!
@@ -169,8 +196,9 @@ Your project is available at:
    - Click "New Web Service"
    - Connect your repository
    - Build command: `pip install -r requirements.txt`
-   - Start command: `python server.py`
-   - Add environment variables
+   - Start command: Leave empty (uses Procfile automatically)
+   - Add environment variables (GROQ_API_KEY, etc.)
+   - Click "Create Web Service"
 
 2. **Railway**:
    - Go to https://railway.app
@@ -192,11 +220,11 @@ Summerizer/
 ├── summarizer.py            # Summarization logic
 ├── telegram_bot.py          # Telegram bot handler (optional)
 ├── requirements.txt         # Python dependencies
-├── tailwind.config.js       # Tailwind CSS configuration
-├── Dockerfile              # Docker configuration
-├── docker-compose.yml      # Docker Compose setup
-├── .gitignore             # Git ignore rules
-└── README.md              # This file
+├── Procfile                 # Deployment configuration
+├── Dockerfile               # Docker configuration
+├── docker-compose.yml       # Docker Compose setup
+├── .gitignore              # Git ignore rules
+└── README.md               # This file
 ```
 
 ---
