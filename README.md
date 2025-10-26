@@ -1,49 +1,37 @@
-# 🤖 AI Summarizer - Text, PDF & Audio Summarization
+# 🤖 AI Summarizer - Modern Web App
 
-A beautiful, modern AI-powered summarization application that can summarize text, PDF documents, and audio files using advanced transformer models and Groq API.
+A beautiful, modern AI-powered summarization application with a sleek Flask-based web interface, featuring dark mode, that can summarize text, PDF documents, and audio files using advanced transformer models and Groq API.
 
-![Streamlit](https://img.shields.io/badge/Streamlit-Framework-FF4B4B?logo=streamlit)
+![Flask](https://img.shields.io/badge/Flask-Framework-000000?logo=flask)
 ![Python](https://img.shields.io/badge/Python-3.11+-blue?logo=python)
+![Tailwind CSS](https://img.shields.io/badge/Tailwind-CSS-38B2AC?logo=tailwind-css)
 ![License](https://img.shields.io/badge/License-MIT-green)
 
 ---
 
 ## ✨ Features
 
-### 🎨 Beautiful Modern UI
-- **Bootstrap-inspired design** with gradient buttons and smooth animations
-- **Responsive layout** that works on desktop and mobile
-- **Interactive cards** and modern color scheme
-- **Professional styling** with custom CSS
+### 🎨 Beautiful Modern UI with Dark Mode
+- **Flask-based web application** (no Streamlit overhead)
+- **Dark/Light mode toggle** with persistent preferences
+- **Responsive Tailwind CSS design** that works on all devices
+- **Smooth animations** and modern gradients
+- **Professional, clean interface**
 
 ### 📝 Multi-Modal Summarization
 - **Text**: Summarize any text input instantly
 - **PDF**: Extract and summarize documents automatically
-- **Audio**: Transcribe and summarize voice recordings using Groq's Whisper
+- **Audio**: Transcribe and summarize voice recordings using Groq's Whisper API
 
 ### ⚙️ Advanced Configuration
 - Multiple AI models (BART, PEGASUS, etc.)
-- Customizable chunk size and overlap
-- Configurable summary length
-- Sampling and temperature controls
-- Real-time settings in sidebar
+- Configurable chunk size and overlap
+- Customizable summary length
+- Temperature and sampling controls
 
 ### 🤖 Telegram Bot Support
-- Summarize text messages
-- Transcribe and summarize voice messages
-- Process PDF files
-- All from your Telegram chat!
-
----
-
-## 📸 Screenshots
-
-### Main Interface
-The application features a beautiful, modern UI with:
-- Gradient-powered buttons with hover effects
-- Feature cards showcasing capabilities
-- Tab-based interface for different input types
-- Real-time advanced settings in the sidebar
+- Optional Telegram bot for summarization
+- Works independently from the web app
 
 ---
 
@@ -57,8 +45,8 @@ The application features a beautiful, modern UI with:
 
 1. **Clone the repository**
 ```bash
-git clone https://github.com/yourusername/ai-summarizer.git
-cd ai-summarizer
+git clone https://github.com/Soroush-Eghdami/Summerizer.git
+cd Summerizer
 ```
 
 2. **Create a virtual environment**
@@ -89,15 +77,15 @@ Get your Groq API key from: https://console.groq.com/
 
 ## 💻 Usage
 
-### Run the Streamlit App
+### Run the Flask Web App
 
 ```bash
-streamlit run app.py
+python server.py
 ```
 
-Open your browser to: `http://localhost:8501`
+Open your browser to: `http://localhost:5000`
 
-### Usage Tips
+### Features Available
 
 1. **Text Summarization**: 
    - Go to the "Text" tab
@@ -117,16 +105,13 @@ Open your browser to: `http://localhost:8501`
    - Click "Transcribe & Summarize"
    - View transcription and summary
 
-4. **Adjust Settings**:
-   - Use the sidebar to customize:
-     - AI Model selection
-     - Chunk size and overlap
-     - Summary length
-     - Temperature and sampling
+4. **Dark Mode**:
+   - Click the moon/sun icon in the top-left to toggle dark/light mode
+   - Your preference is saved automatically
 
 ---
 
-## 🤖 Telegram Bot
+## 🤖 Telegram Bot (Optional)
 
 Run the Telegram bot separately:
 
@@ -152,7 +137,7 @@ python telegram_bot.py
 docker build -t ai-summarizer .
 
 # Run the container
-docker run -p 8501:8501 \
+docker run -p 5000:5000 \
   -e GROQ_API_KEY=your_key \
   ai-summarizer
 ```
@@ -164,59 +149,90 @@ docker-compose up -d
 ```
 
 This will start:
-- Streamlit app on port 8501
+- Flask web app on port 5000
 - Telegram bot (if token provided)
 
 ---
 
 ## 📦 Deployment to GitHub
 
-### 1. Initialize Git Repository
+### Already on GitHub!
 
-```bash
-git init
-git add .
-git commit -m "Initial commit: AI Summarizer with beautiful UI"
+Your project is available at:
+**https://github.com/Soroush-Eghdami/Summerizer**
+
+### Deploy with Render or Railway (Free)
+
+1. **Render**:
+   - Go to https://render.com
+   - Sign in with GitHub
+   - Click "New Web Service"
+   - Connect your repository
+   - Build command: `pip install -r requirements.txt`
+   - Start command: `python server.py`
+   - Add environment variables
+
+2. **Railway**:
+   - Go to https://railway.app
+   - Sign in with GitHub
+   - Create new project
+   - Deploy from GitHub
+   - Add environment variables
+   - Deploy!
+
+---
+
+## 🏗️ Project Structure
+
+```
+Summerizer/
+├── server.py                 # Main Flask application
+├── templates/
+│   └── index.html           # Beautiful web interface
+├── summarizer.py            # Summarization logic
+├── telegram_bot.py          # Telegram bot handler (optional)
+├── requirements.txt         # Python dependencies
+├── tailwind.config.js       # Tailwind CSS configuration
+├── Dockerfile              # Docker configuration
+├── docker-compose.yml      # Docker Compose setup
+├── .gitignore             # Git ignore rules
+└── README.md              # This file
 ```
 
-### 2. Create GitHub Repository
+---
 
-1. Go to https://github.com/new
-2. Create a new repository named `ai-summarizer`
-3. Don't initialize with README (we already have one)
+## 🛠️ Technical Details
 
-### 3. Push to GitHub
+### Technologies Used
+- **Flask**: Lightweight web framework
+- **Tailwind CSS**: Utility-first CSS framework
+- **Transformers** (Hugging Face): AI models
+- **PyPDF**: PDF text extraction
+- **Groq API**: Fast audio transcription
+- **Python-telegram-bot**: Telegram integration
+- **Torch**: Deep learning backend
 
-```bash
-git remote add origin https://github.com/yourusername/ai-summarizer.git
-git branch -M main
-git push -u origin main
-```
+### How It Works
 
-### 4. Deploy with Streamlit Cloud (Free)
+1. **Text Input**: Directly processed and chunked
+2. **PDF Input**: Text extracted using PyPDF, then chunked
+3. **Audio Input**: Transcribed via Groq API, then summarized
+4. **Chunking**: Large texts split with overlap for context
+5. **Summarization**: Each chunk summarized, then combined
+6. **Display**: Beautiful UI shows results with copy functionality
 
-1. Go to https://share.streamlit.io/
-2. Sign in with GitHub
-3. Click "New app"
-4. Select your repository
-5. Set main file path: `app.py`
-6. Add environment variables:
-   - `GROQ_API_KEY`: Your Groq API key
-7. Click "Deploy"
+---
 
-### Alternative: Deploy to Heroku
+## 🎨 UI Features
 
-1. Install Heroku CLI
-2. Create `Procfile`:
-```
-web: streamlit run app.py --server.port=$PORT --server.address=0.0.0.0
-```
-3. Deploy:
-```bash
-heroku create ai-summarizer
-heroku config:set GROQ_API_KEY=your_key
-git push heroku main
-```
+- ✅ Dark/Light mode toggle
+- ✅ Responsive design (mobile & desktop)
+- ✅ Smooth animations
+- ✅ File upload with drag & drop
+- ✅ Loading indicators
+- ✅ Copy to clipboard
+- ✅ Error handling
+- ✅ Modern gradients and shadows
 
 ---
 
@@ -238,43 +254,6 @@ git push heroku main
 | `max_summary_tokens` | Maximum summary length | `256` |
 | `do_sample` | Enable sampling | `False` |
 | `temperature` | Generation temperature | `1.0` |
-
----
-
-## 🏗️ Project Structure
-
-```
-ai-summarizer/
-├── app.py                 # Main Streamlit application
-├── summarizer.py          # Summarization logic
-├── telegram_bot.py        # Telegram bot handler
-├── requirements.txt       # Python dependencies
-├── Dockerfile            # Docker configuration
-├── docker-compose.yml    # Docker Compose setup
-├── .gitignore           # Git ignore rules
-└── README.md            # This file
-```
-
----
-
-## 🛠️ Technical Details
-
-### Technologies Used
-- **Streamlit**: Modern web interface
-- **Transformers** (Hugging Face): AI models
-- **PyPDF**: PDF text extraction
-- **Groq API**: Fast audio transcription
-- **Python-telegram-bot**: Telegram integration
-- **Torch**: Deep learning backend
-
-### How It Works
-
-1. **Text Input**: Directly processed and chunked
-2. **PDF Input**: Text extracted using PyPDF, then chunked
-3. **Audio Input**: Transcribed via Groq API, then summarized
-4. **Chunking**: Large texts split with overlap for context
-5. **Summarization**: Each chunk summarized, then combined
-6. **Display**: Beautiful UI shows results with timing
 
 ---
 
@@ -308,8 +287,8 @@ MIT License © 2024
 
 **Soroush Eghdami**
 
-- GitHub: [@yourusername](https://github.com/yourusername)
-- Email: your.email@example.com
+- GitHub: [@Soroush-Eghdami](https://github.com/Soroush-Eghdami)
+- Repository: https://github.com/Soroush-Eghdami/Summerizer
 
 ---
 
@@ -317,19 +296,10 @@ MIT License © 2024
 
 - Hugging Face for transformer models
 - Groq for fast Whisper API
-- Streamlit for the amazing framework
+- Flask team for the amazing framework
+- Tailwind CSS for the beautiful design system
 - The open-source community
 
 ---
 
-## 📊 Stats
-
-- ⚡ Fast summarization with transformer models
-- 🎨 Beautiful modern UI
-- 📱 Mobile responsive
-- 🔄 Real-time configuration
-- 🚀 Easy deployment
-
----
-
-Made with ❤️ using AI and modern web technologies.
+Made with ❤️ using Flask, Tailwind CSS, Transformers & Groq API.
