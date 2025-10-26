@@ -5,6 +5,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AI Summarizer - Text, PDF & Audio</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        // Configure Tailwind CDN to enable dark mode
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {}
+            }
+        }
+    </script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         @keyframes float {
@@ -66,27 +75,27 @@
         </div>
 
         <!-- Tabs -->
-        <div class="bg-white rounded-2xl shadow-lg overflow-hidden">
+        <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg overflow-hidden">
             <!-- Tab Navigation -->
-            <div class="flex border-b border-gray-200">
-                <button onclick="switchTab('text')" class="tab-btn flex-1 px-6 py-4 font-semibold text-gray-700 hover:bg-gray-50 transition-colors border-b-2 border-transparent" id="tab-text">
+            <div class="flex border-b border-gray-200 dark:border-gray-700">
+                <button onclick="switchTab('text')" class="tab-btn flex-1 px-6 py-4 font-semibold text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors border-b-2 border-transparent" id="tab-text">
                     📝 Text
                 </button>
-                <button onclick="switchTab('pdf')" class="tab-btn flex-1 px-6 py-4 font-semibold text-gray-700 hover:bg-gray-50 transition-colors border-b-2 border-transparent" id="tab-pdf">
+                <button onclick="switchTab('pdf')" class="tab-btn flex-1 px-6 py-4 font-semibold text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors border-b-2 border-transparent" id="tab-pdf">
                     📄 PDF
                 </button>
-                <button onclick="switchTab('audio')" class="tab-btn flex-1 px-6 py-4 font-semibold text-gray-700 hover:bg-gray-50 transition-colors border-b-2 border-transparent" id="tab-audio">
+                <button onclick="switchTab('audio')" class="tab-btn flex-1 px-6 py-4 font-semibold text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors border-b-2 border-transparent" id="tab-audio">
                     🎤 Audio
                 </button>
             </div>
 
             <!-- Tab Content -->
-            <div class="p-8">
+            <div class="p-8 dark:bg-gray-800">
                 
                 <!-- Text Tab -->
                 <div id="content-text" class="tab-content">
-                    <h2 class="text-2xl font-bold mb-4">Enter Your Text</h2>
-                    <textarea id="text-input" rows="10" class="w-full border-2 border-gray-300 rounded-lg p-4 focus:border-purple-500 focus:outline-none transition-colors" placeholder="Paste or type the text you want to summarize here..."></textarea>
+                    <h2 class="text-2xl font-bold mb-4 dark:text-white">Enter Your Text</h2>
+                    <textarea id="text-input" rows="10" class="w-full border-2 border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg p-4 focus:border-purple-500 focus:outline-none transition-colors" placeholder="Paste or type the text you want to summarize here..."></textarea>
                     <button onclick="summarizeText()" class="mt-4 w-full bg-gradient-to-r from-purple-600 to-purple-800 text-white py-3 px-6 rounded-lg font-semibold hover:shadow-lg transition-all hover:scale-105">
                         <i class="fas fa-magic mr-2"></i> Summarize Text
                     </button>
@@ -94,13 +103,13 @@
 
                 <!-- PDF Tab -->
                 <div id="content-pdf" class="tab-content hidden">
-                    <h2 class="text-2xl font-bold mb-4">Upload PDF File</h2>
-                    <div class="border-2 border-dashed border-purple-400 rounded-lg p-8 text-center bg-purple-50">
+                    <h2 class="text-2xl font-bold mb-4 dark:text-white">Upload PDF File</h2>
+                    <div class="border-2 border-dashed border-purple-400 dark:border-purple-500 rounded-lg p-8 text-center bg-purple-50 dark:bg-gray-800">
                         <input type="file" id="pdf-input" accept=".pdf" class="hidden" onchange="handlePdfSelect(event)">
                         <label for="pdf-input" class="cursor-pointer">
-                            <i class="fas fa-cloud-upload-alt text-6xl text-purple-600 mb-4"></i>
-                            <p class="text-gray-700 font-semibold">Click to upload PDF</p>
-                            <p class="text-gray-500 text-sm mt-2">Maximum file size: 200MB</p>
+                            <i class="fas fa-cloud-upload-alt text-6xl text-purple-600 dark:text-purple-400 mb-4"></i>
+                            <p class="text-gray-700 dark:text-gray-300 font-semibold" id="pdf-label">Click to upload PDF</p>
+                            <p class="text-gray-500 dark:text-gray-400 text-sm mt-2" id="pdf-filename"></p>
                         </label>
                     </div>
                     <button onclick="summarizePdf()" class="mt-4 w-full bg-gradient-to-r from-purple-600 to-purple-800 text-white py-3 px-6 rounded-lg font-semibold hover:shadow-lg transition-all hover:scale-105">
@@ -110,13 +119,13 @@
 
                 <!-- Audio Tab -->
                 <div id="content-audio" class="tab-content hidden">
-                    <h2 class="text-2xl font-bold mb-4">Upload Audio File</h2>
-                    <div class="border-2 border-dashed border-purple-400 rounded-lg p-8 text-center bg-purple-50">
+                    <h2 class="text-2xl font-bold mb-4 dark:text-white">Upload Audio File</h2>
+                    <div class="border-2 border-dashed border-purple-400 dark:border-purple-500 rounded-lg p-8 text-center bg-purple-50 dark:bg-gray-800">
                         <input type="file" id="audio-input" accept=".mp3,.wav,.ogg" class="hidden" onchange="handleAudioSelect(event)">
                         <label for="audio-input" class="cursor-pointer">
-                            <i class="fas fa-microphone text-6xl text-purple-600 mb-4"></i>
-                            <p class="text-gray-700 font-semibold">Click to upload audio</p>
-                            <p class="text-gray-500 text-sm mt-2">MP3, WAV, or OGG format</p>
+                            <i class="fas fa-microphone text-6xl text-purple-600 dark:text-purple-400 mb-4"></i>
+                            <p class="text-gray-700 dark:text-gray-300 font-semibold" id="audio-label">Click to upload audio</p>
+                            <p class="text-gray-500 dark:text-gray-400 text-sm mt-2" id="audio-filename">MP3, WAV, or OGG format</p>
                         </label>
                     </div>
                     <button onclick="summarizeAudio()" class="mt-4 w-full bg-gradient-to-r from-purple-600 to-purple-800 text-white py-3 px-6 rounded-lg font-semibold hover:shadow-lg transition-all hover:scale-105">
@@ -129,11 +138,11 @@
 
         <!-- Results -->
         <div id="results" class="mt-8 hidden">
-            <div class="bg-gradient-to-br from-purple-50 to-pink-50 rounded-2xl shadow-lg p-8">
-                <h2 class="text-2xl font-bold mb-4 flex items-center">
-                    <i class="fas fa-sparkles text-purple-600 mr-2"></i> Summary
+            <div class="bg-gradient-to-br from-purple-50 to-pink-50 dark:from-purple-900 dark:to-pink-900 rounded-2xl shadow-lg p-8">
+                <h2 class="text-2xl font-bold mb-4 flex items-center dark:text-white">
+                    <i class="fas fa-sparkles text-purple-600 dark:text-purple-400 mr-2"></i> Summary
                 </h2>
-                <div id="summary-content" class="bg-white rounded-lg p-6 mb-4"></div>
+                <div id="summary-content" class="bg-white dark:bg-gray-800 rounded-lg p-6 mb-4 dark:text-white"></div>
                 <button onclick="copySummary()" class="bg-purple-600 text-white px-6 py-2 rounded-lg hover:bg-purple-700 transition-colors">
                     <i class="fas fa-copy mr-2"></i> Copy Summary
                 </button>
@@ -142,17 +151,17 @@
 
         <!-- Loading Overlay -->
         <div id="loading" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-            <div class="bg-white rounded-2xl p-8 max-w-md mx-4 text-center">
+            <div class="bg-white dark:bg-gray-800 rounded-2xl p-8 max-w-md mx-4 text-center">
                 <div class="animate-spin rounded-full h-16 w-16 border-b-4 border-purple-600 mx-auto mb-4"></div>
-                <p class="text-lg font-semibold text-gray-700">Processing...</p>
-                <p class="text-sm text-gray-500 mt-2">This may take a few moments</p>
+                <p class="text-lg font-semibold text-gray-700 dark:text-white">Processing...</p>
+                <p class="text-sm text-gray-500 dark:text-gray-400 mt-2">This may take a few moments</p>
             </div>
         </div>
 
     </main>
 
     <!-- Footer -->
-    <footer class="bg-white mt-16 py-8 text-center text-gray-600">
+    <footer class="bg-white dark:bg-gray-800 mt-16 py-8 text-center text-gray-600 dark:text-gray-300">
         <p>Built with ❤️ using Flask, Transformers & Groq API</p>
         <p class="text-sm mt-2">Powered by AI • Fast • Reliable</p>
     </footer>
@@ -234,6 +243,10 @@
 
         function handlePdfSelect(event) {
             selectedPdfFile = event.target.files[0];
+            if (selectedPdfFile) {
+                document.getElementById('pdf-label').textContent = 'Selected: ' + selectedPdfFile.name;
+                document.getElementById('pdf-filename').textContent = 'Size: ' + (selectedPdfFile.size / 1024 / 1024).toFixed(2) + ' MB';
+            }
         }
 
         async function summarizePdf() {
@@ -266,6 +279,10 @@
 
         function handleAudioSelect(event) {
             selectedAudioFile = event.target.files[0];
+            if (selectedAudioFile) {
+                document.getElementById('audio-label').textContent = 'Selected: ' + selectedAudioFile.name;
+                document.getElementById('audio-filename').textContent = 'Size: ' + (selectedAudioFile.size / 1024 / 1024).toFixed(2) + ' MB';
+            }
         }
 
         async function summarizeAudio() {
