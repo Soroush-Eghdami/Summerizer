@@ -132,7 +132,7 @@ class PdfSummarizer:
                 "temperature": self.config.temperature,
             }
             
-            response = requests.post(url, json=payload, timeout=120)
+            response = requests.post(url, json=payload, timeout=300)  # 5 min timeout for model loading
             if response.status_code == 200:
                 result = response.json()
                 return result.get("response", "").strip()
@@ -140,6 +140,8 @@ class PdfSummarizer:
                 raise Exception(f"Ollama API error: {response.status_code} - {response.text}")
         except requests.exceptions.ConnectionError:
             raise Exception(f"Cannot connect to Ollama at {self.config.ollama_base_url}. Make sure Ollama is running.")
+        except requests.exceptions.Timeout:
+            raise Exception(f"Ollama request timed out. Model is slow or server is overloaded. Try again in a moment.")
         except Exception as e:
             raise Exception(f"Ollama summarization failed: {str(e)}")
 
