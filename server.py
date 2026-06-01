@@ -128,6 +128,9 @@ def config():
     if request.method == 'GET': # Sends current settings (configs)
         return jsonify({
             'model_name': current_config.model_name,
+            'use_ollama': current_config.use_ollama,
+            'ollama_model': current_config.ollama_model,
+            'ollama_base_url': current_config.ollama_base_url,
             'max_chunk_tokens': current_config.max_chunk_tokens,
             'chunk_overlap_tokens': current_config.chunk_overlap_tokens,
             'min_summary_tokens': current_config.min_summary_tokens,

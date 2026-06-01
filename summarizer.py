@@ -6,6 +6,8 @@ import torch # models like huggingface, pytorch, etc.
 from dataclasses import dataclass # For defining setting easier in classes
 from typing import List, Optional, Tuple # For using lists, optional, and tuples
 from pypdf import PdfReader # For reading pdf files
+import requests # For making HTTP requests to Ollama
+import json # For handling JSON responses
 from transformers import ( # Models for huggingface library (we use it for summarization)
     AutoModelForSeq2SeqLM,
     AutoTokenizer,
@@ -13,7 +15,7 @@ from transformers import ( # Models for huggingface library (we use it for summa
     WhisperProcessor,
     WhisperForConditionalGeneration,
 )
-# For simple text we use BART
+# For simple text we use BART or Ollama gemma4
 # For pdf we use a def to extract the text from it 
 # For audio we use whisper
 
@@ -21,6 +23,9 @@ from transformers import ( # Models for huggingface library (we use it for summa
 class SummarizationConfig:
     model_name: str = "facebook/bart-large-cnn" # For simple text we use BART
     speech_model_name: str = "openai/whisper-small"  # multilingual # For audio we use whisper
+    use_ollama: bool = False # Whether to use Ollama for summarization
+    ollama_model: str = "gemma4:latest" # Ollama model to use
+    ollama_base_url: str = "http://localhost:11434" # Ollama server URL
     device: Optional[int] = None  # CPU by default (we can use GPU if we want)
     max_chunk_tokens: int = 900 # For chunking the text
     chunk_overlap_tokens: int = 100 # For chunking the text
@@ -98,6 +103,12 @@ class PdfSummarizer:
 
     # --- Summarization ---
     def _summarize_chunk(self, chunk: str) -> str: # For summarizing a chunk of text
+        if self.config.use_ollama:
+            return self._summarize_chunk_ollama(chunk)
+        else:
+            return self._summarize_chunk_huggingface(chunk)
+
+    def _summarize_chunk_huggingface(self, chunk: str) -> str: # For summarizing a chunk using Hugging Face
         self._load_text_model()
         summary = self.pipe( # For summarizing the chunk
             chunk,
@@ -108,6 +119,29 @@ class PdfSummarizer:
             truncation=True,
         )
         return summary[0]["summary_text"].strip() # returns a list of dictinaries # .strip() for removing spaces
+
+    def _summarize_chunk_ollama(self, chunk: str) -> str: # For summarizing a chunk using Ollama
+        try:
+            url = f"{self.config.ollama_base_url}/api/generate"
+            prompt = f"Summarize the following text in a concise way:\n\n{chunk}\n\nSummary:"
+            
+            payload = {
+                "model": self.config.ollama_model,
+                "prompt": prompt,
+                "stream": False,
+                "temperature": self.config.temperature,
+            }
+            
+            response = requests.post(url, json=payload, timeout=120)
+            if response.status_code == 200:
+                result = response.json()
+                return result.get("response", "").strip()
+            else:
+                raise Exception(f"Ollama API error: {response.status_code} - {response.text}")
+        except requests.exceptions.ConnectionError:
+            raise Exception(f"Cannot connect to Ollama at {self.config.ollama_base_url}. Make sure Ollama is running.")
+        except Exception as e:
+            raise Exception(f"Ollama summarization failed: {str(e)}")
 
     def summarize_text(self, text: str) -> str: # For summerizing all of text 
         self._load_text_model() 

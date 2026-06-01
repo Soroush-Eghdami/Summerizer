@@ -267,21 +267,51 @@ Summerizer/
 ## 🔧 Configuration
 
 ### Available Models
+
+#### Hugging Face Models (Default)
 - `facebook/bart-large-cnn` - Default, best for summaries
 - `facebook/bart-large-xsum` - Extra abstract summaries
 - `google/pegasus-xsum` - Alternative abstract model
+
+#### Ollama Models (New!)
+- `gemma4:latest` - Recommended LLM for summarization
+- Any other Ollama-supported model
 
 ### Configuration Options
 
 | Parameter | Description | Default |
 |-----------|-------------|---------|
 | `model_name` | Hugging Face model | `facebook/bart-large-cnn` |
+| `use_ollama` | Use Ollama for summarization | `False` |
+| `ollama_model` | Ollama model to use | `gemma4:latest` |
+| `ollama_base_url` | Ollama server URL | `http://localhost:11434` |
 | `max_chunk_tokens` | Maximum tokens per chunk | `900` |
 | `chunk_overlap_tokens` | Overlap between chunks | `100` |
 | `min_summary_tokens` | Minimum summary length | `64` |
 | `max_summary_tokens` | Maximum summary length | `256` |
 | `do_sample` | Enable sampling | `False` |
 | `temperature` | Generation temperature | `1.0` |
+
+### Using Ollama for Summarization
+
+1. **Install Ollama**: Download from https://ollama.ai/
+
+2. **Pull the model**:
+```bash
+ollama pull gemma4:latest
+```
+
+3. **Start Ollama** (if not already running):
+```bash
+ollama serve
+```
+
+4. **Enable Ollama in configuration** via the web interface or API:
+   - Set `use_ollama: true`
+   - Set `ollama_model: "gemma4:latest"` (or your preferred model)
+   - Set `ollama_base_url: "http://localhost:11434"` (adjust if needed)
+
+The Ollama integration works seamlessly with **text, PDF, and audio summarization** — just set `use_ollama: true` and the app will use Ollama's gemma4 model for all summarization tasks!
 
 ---
 
